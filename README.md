@@ -6,6 +6,7 @@
 
 <p align="center">
   <a href="#install-with-homebrew">Install</a> ·
+  <a href="#update-with-homebrew">Update</a> ·
   <a href="#whitney-your-terminal-watchdog">Meet Whitney</a> ·
   <a href="#whitneys-bed">Wake Whitney</a>
 </p>
@@ -38,8 +39,17 @@ brew install Gabriellvl/tap/stayawake
 stayawake status
 ```
 
-Use `brew upgrade Gabriellvl/tap/stayawake` to update. Use
-`brew uninstall Gabriellvl/tap/stayawake` to remove the command. Run
+### Update with Homebrew
+
+```bash
+brew update
+brew upgrade Gabriellvl/tap/stayawake
+```
+
+Run `stayawake --version` to confirm the installed version. To upgrade all
+installed Homebrew packages, use `brew upgrade` without a package name.
+
+Use `brew uninstall Gabriellvl/tap/stayawake` to remove the command. Run
 `stayawake off` before uninstalling if you want to restore normal sleep.
 
 `stayawake --help` lists all commands and `stayawake --version` shows
