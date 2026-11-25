@@ -64,10 +64,10 @@ use [the Git checkout](#run-from-the-repo) to try the latest code.
 
 <img src="docs/whitney-logo.png" width="52" align="right" alt="">
 
-The white Dogo Argentino who inspired stayawake now has three terminal poses.
-She stands watch when your Mac is set to stay awake, curls up when it can
-sleep, and perks up when there is a new release. Run `stayawake buddy` to see
-her and check your Mac's sleep setting.
+Whitney wags her tail and stands watch after `stayawake on`. When you run
+`stayawake off`, she curls up with drifting Zs. Run `stayawake` or
+`stayawake status` to see the animation for your Mac’s current setting.
+`stayawake buddy` also shows her pose when you pipe the output.
 
 During normal interactive use, stayawake checks the public GitHub release
 page at most once a day after a successful check. A network failure is
