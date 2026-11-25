@@ -29,23 +29,28 @@ restore normal sleep. `stayawake status` tells you which mode you’re in.
 | `stayawake off` | Allows normal sleep |
 | `stayawake` or `stayawake status` | Shows the current setting |
 | `stayawake buddy` | Shows Whitney the Dogo Argentino, on watch or asleep |
+| `stayawake upgrade` | Installs the latest version via Homebrew |
 | `stayawake updates` | Checks GitHub for a newer release |
 | `stayawake updates --open` | Opens the release page |
 
 ## Install with Homebrew
 
-With Homebrew installed, run this once to install stayawake.
-
 ```bash
-curl -fsSL https://raw.githubusercontent.com/gabe-maxxing/stayawake/main/scripts/install-homebrew.sh | bash
+brew tap gabe-maxxing/tap
+brew trust --formula gabe-maxxing/tap/stayawake
+brew install gabe-maxxing/tap/stayawake
 ```
 
 Run `stayawake status` to see Whitney and your current sleep setting.
 
 ### Update with Homebrew
 
-Run the same installer again to update stayawake. You can also update it
-directly with Homebrew.
+```bash
+stayawake upgrade
+```
+
+If you still have version 1.1.0, run this once to get the command when it
+becomes available in the tap.
 
 ```bash
 brew update

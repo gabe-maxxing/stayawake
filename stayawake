@@ -6,12 +6,13 @@ RELEASE_URL=https://github.com/gabe-maxxing/stayawake/releases
 
 usage() {
   cat <<'HELP'
-Usage: stayawake [on|off|status|buddy|updates [--open]|--help|--version]
+Usage: stayawake [on|off|status|buddy|upgrade|updates [--open]|--help|--version]
 
   on              Keep your Mac awake
   off             Allow your Mac to sleep
   status          Show the current setting (default)
   buddy           See Whitney the Dogo Argentino on watch or asleep
+  upgrade         Upgrade stayawake with Homebrew
   updates         Check GitHub for a newer release
   updates --open  Open the GitHub release page
   --help          Show this help
@@ -240,7 +241,7 @@ check_updates() {
       draw_buddy alert
     fi
     printf 'Whitney spotted stayawake v%s! You have v%s.\n' "$latest" "$VERSION"
-    printf 'Homebrew: brew upgrade gabe-maxxing/tap/stayawake\n'
+    printf 'Homebrew: stayawake upgrade\n'
     printf 'Release: %s/tag/v%s\n' "$RELEASE_URL" "$latest"
   elif [[ $mode == explicit ]]; then
     printf 'Whitney checked. You’re up to date (v%s installed; v%s latest).\n' "$VERSION" "$latest"
@@ -282,6 +283,21 @@ show_sleep_state() {
   check_updates passive
 }
 
+upgrade_with_homebrew() {
+  local formula=gabe-maxxing/tap/stayawake
+
+  if ! command -v brew >/dev/null; then
+    printf 'Install Homebrew from https://brew.sh/ to use stayawake upgrade.\n' >&2
+    return 1
+  fi
+
+  brew update
+  if brew command trust >/dev/null 2>&1; then
+    brew trust --formula "$formula"
+  fi
+  brew upgrade "$formula"
+}
+
 main() {
   local action=${1-status}
   if [[ $action == updates && $# == 2 && $2 == --open ]]; then
@@ -301,6 +317,7 @@ main() {
     -h|--help) usage ;;
     -V|--version) printf 'stayawake %s\n' "$VERSION" ;;
     on|off|status|buddy) show_sleep_state "$action" ;;
+    upgrade) upgrade_with_homebrew ;;
     updates) check_updates explicit ;;
     *) usage >&2; return 2 ;;
   esac
