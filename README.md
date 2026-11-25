@@ -35,7 +35,9 @@ restore normal sleep. `stayawake status` tells you which mode you’re in.
 ## Install with Homebrew
 
 ```bash
-brew install Gabriellvl/tap/stayawake
+brew tap gabe-maxxing/tap
+brew trust --formula gabe-maxxing/tap/stayawake
+brew install gabe-maxxing/tap/stayawake
 stayawake status
 ```
 
@@ -43,13 +45,15 @@ stayawake status
 
 ```bash
 brew update
-brew upgrade Gabriellvl/tap/stayawake
+brew trust --formula gabe-maxxing/tap/stayawake
+brew upgrade gabe-maxxing/tap/stayawake
 ```
 
+Homebrew saves trust for this formula, so you only need to grant it once.
 Run `stayawake --version` to confirm the installed version. To upgrade all
 installed Homebrew packages, use `brew upgrade` without a package name.
 
-Use `brew uninstall Gabriellvl/tap/stayawake` to remove the command. Run
+Use `brew uninstall gabe-maxxing/tap/stayawake` to remove the command. Run
 `stayawake off` before uninstalling if you want to restore normal sleep.
 
 `stayawake --help` lists all commands and `stayawake --version` shows
