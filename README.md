@@ -34,14 +34,18 @@ restore normal sleep. `stayawake status` tells you which mode you’re in.
 
 ## Install with Homebrew
 
+With Homebrew installed, run this once to install stayawake.
+
 ```bash
-brew tap gabe-maxxing/tap
-brew trust --formula gabe-maxxing/tap/stayawake
-brew install gabe-maxxing/tap/stayawake
-stayawake status
+curl -fsSL https://raw.githubusercontent.com/gabe-maxxing/stayawake/main/scripts/install-homebrew.sh | bash
 ```
 
+Run `stayawake status` to see Whitney and your current sleep setting.
+
 ### Update with Homebrew
+
+Run the same installer again to update stayawake. You can also update it
+directly with Homebrew.
 
 ```bash
 brew update
@@ -49,16 +53,12 @@ brew trust --formula gabe-maxxing/tap/stayawake
 brew upgrade gabe-maxxing/tap/stayawake
 ```
 
-Homebrew saves trust for this formula, so you only need to grant it once.
-Run `stayawake --version` to confirm the installed version. To upgrade all
-installed Homebrew packages, use `brew upgrade` without a package name.
+Homebrew saves the trust setting for this formula. Older Homebrew versions
+without `brew trust` can skip that line. Run `stayawake --version` to confirm
+the installed version.
 
 Use `brew uninstall gabe-maxxing/tap/stayawake` to remove the command. Run
 `stayawake off` before uninstalling if you want to restore normal sleep.
-
-`stayawake --help` lists all commands and `stayawake --version` shows
-the installed version. If your installed release predates the terminal buddy,
-use [the Git checkout](#run-from-the-repo) to try the latest code.
 
 ## Whitney, your terminal watchdog
 
