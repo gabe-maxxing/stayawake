@@ -2,16 +2,17 @@
 set -euo pipefail
 
 VERSION=1.2.0
-RELEASE_URL=https://github.com/Gabriellvl/stayawake/releases
+RELEASE_URL=https://github.com/gabe-maxxing/stayawake/releases
 
 usage() {
   cat <<'HELP'
-Usage: stayawake [on|off|status|buddy|updates [--open]|--help|--version]
+Usage: stayawake [on|off|status|buddy|upgrade|updates [--open]|--help|--version]
 
   on              Keep your Mac awake
   off             Allow your Mac to sleep
   status          Show the current setting (default)
   buddy           See Whitney the Dogo Argentino on watch or asleep
+  upgrade         Upgrade stayawake with Homebrew
   updates         Check GitHub for a newer release
   updates --open  Open the GitHub release page
   --help          Show this help
@@ -51,7 +52,21 @@ buddy_sprite() {
 
 SPRITE
       ;;
-    awake|alert) cat <<'SPRITE'
+    awake|awake-wag|alert)
+      if [[ $1 == awake-wag ]]; then
+        cat <<'SPRITE'
+                                     #
+                                 ####.####
+                                ##-.......#
+                               ##+---...####
+  ##                          ##+----....#.#####
+  #++                        ##++---..........##
+   #++                      ##+++---...........#
+   ##++     ######         #+++=+++-.........##
+    #++#   #++++++#########++++==+++...########
+SPRITE
+      else
+        cat <<'SPRITE'
                                      #
                                  ####.####
                                 ##-.......#
@@ -61,6 +76,9 @@ SPRITE
  #+#                        ##+++---...........#
  ##++       ######         #+++=+++-.........##
   #+++#    #++++++#########++++==+++...########
+SPRITE
+      fi
+      cat <<'SPRITE'
    #++++###++++++++++++++++++++===+++.##
     #++++++++++++++++++++++++++++====##
        ##++++++++++++++++++++++++++=##
@@ -93,12 +111,13 @@ buddy_color() {
 }
 
 draw_buddy() {
-  local mood=$1 top bottom upper lower color index
+  local mood=$1 render_color=${2:-0} top bottom upper lower color index
   case "$mood" in
     asleep) printf '                     z Z\n' ;;
+    asleep-dozing) printf '                       z Z\n'; mood=asleep ;;
     alert) printf '                                    !!\n' ;;
   esac
-  if [[ ! -t 1 || ${TERM:-dumb} == dumb || -n ${NO_COLOR+x} ]]; then
+  if [[ $render_color == 0 ]]; then
     buddy_sprite "$mood"
     return
   fi
@@ -121,6 +140,37 @@ draw_buddy() {
     done
     printf '\n'
   done < <(buddy_sprite "$mood")
+}
+
+show_buddy() {
+  local mood=$1 render_color=0 rows cols rest still moving frame line height
+  if [[ -t 1 && ${TERM:-dumb} != dumb && -z ${NO_COLOR+x} ]]; then
+    render_color=1
+  fi
+
+  still=$(draw_buddy "$mood" "$render_color")
+  height=$(printf '%s\n' "$still" | /usr/bin/wc -l)
+
+  # Leave a static pose when the frame would wrap or fill the terminal.
+  if [[ ! -t 1 || ${TERM:-dumb} == dumb ]] ||
+     ! read -r rows cols rest < <(/bin/stty size 2>/dev/null < /dev/tty) ||
+     (( rows <= height || cols < 50 )); then
+    printf '%s\n' "$still"
+    return
+  fi
+
+  case "$mood" in
+    awake) moving=$(draw_buddy awake-wag "$render_color") ;;
+    asleep) moving=$(draw_buddy asleep-dozing "$render_color") ;;
+  esac
+  printf '%s\n' "$still"
+  for frame in "$moving" "$still" "$moving" "$still"; do
+    /bin/sleep 0.18
+    printf '\033[%dA' "$height"
+    while IFS= read -r line; do
+      printf '%s\033[K\n' "$line"
+    done <<< "$frame"
+  done
 }
 
 valid_version() {
@@ -185,9 +235,13 @@ check_updates() {
   fi
   if newer_than "$latest" "$VERSION" && [[ $mode == explicit || $latest != "$announced" ]]; then
     announced=$latest
-    draw_buddy alert
+    if [[ -t 1 && ${TERM:-dumb} != dumb && -z ${NO_COLOR+x} ]]; then
+      draw_buddy alert 1
+    else
+      draw_buddy alert
+    fi
     printf 'Whitney spotted stayawake v%s! You have v%s.\n' "$latest" "$VERSION"
-    printf 'Homebrew: brew upgrade Gabriellvl/tap/stayawake\n'
+    printf 'Homebrew: stayawake upgrade\n'
     printf 'Release: %s/tag/v%s\n' "$RELEASE_URL" "$latest"
   elif [[ $mode == explicit ]]; then
     printf 'Whitney checked. You’re up to date (v%s installed; v%s latest).\n' "$VERSION" "$latest"
@@ -219,7 +273,7 @@ show_sleep_state() {
   esac
 
   if [[ $action == buddy || -t 1 && ${TERM:-dumb} != dumb ]]; then
-    draw_buddy "$mood"
+    show_buddy "$mood"
     if [[ $mood == awake ]]; then
       printf 'Whitney · on watch\n'
     else
@@ -227,6 +281,21 @@ show_sleep_state() {
     fi
   fi
   check_updates passive
+}
+
+upgrade_with_homebrew() {
+  local formula=gabe-maxxing/tap/stayawake
+
+  if ! command -v brew >/dev/null; then
+    printf 'Install Homebrew from https://brew.sh/ to use stayawake upgrade.\n' >&2
+    return 1
+  fi
+
+  brew update
+  if brew command trust >/dev/null 2>&1; then
+    brew trust --formula "$formula"
+  fi
+  brew upgrade "$formula"
 }
 
 main() {
@@ -248,6 +317,7 @@ main() {
     -h|--help) usage ;;
     -V|--version) printf 'stayawake %s\n' "$VERSION" ;;
     on|off|status|buddy) show_sleep_state "$action" ;;
+    upgrade) upgrade_with_homebrew ;;
     updates) check_updates explicit ;;
     *) usage >&2; return 2 ;;
   esac

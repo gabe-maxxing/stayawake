@@ -17,7 +17,7 @@ fi
 latest_release() { printf '2.10.0\n'; }
 check_updates explicit > "$XDG_CACHE_HOME/output"
 grep -F 'Whitney spotted stayawake v2.10.0!' "$XDG_CACHE_HOME/output"
-grep -F 'https://github.com/Gabriellvl/stayawake/releases/tag/v2.10.0' "$XDG_CACHE_HOME/output"
+grep -F 'https://github.com/gabe-maxxing/stayawake/releases/tag/v2.10.0' "$XDG_CACHE_HOME/output"
 grep -Eq '^[0-9]+ 2\.10\.0 2\.10\.0$' "$(release_cache_path)"
 
 latest_release() { printf '%s\n' "$VERSION"; }

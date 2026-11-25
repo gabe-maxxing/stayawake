@@ -6,6 +6,7 @@
 
 <p align="center">
   <a href="#install-with-homebrew">Install</a> ·
+  <a href="#update-with-homebrew">Update</a> ·
   <a href="#whitney-your-terminal-watchdog">Meet Whitney</a> ·
   <a href="#whitneys-bed">Wake Whitney</a>
 </p>
@@ -28,32 +29,50 @@ restore normal sleep. `stayawake status` tells you which mode you’re in.
 | `stayawake off` | Allows normal sleep |
 | `stayawake` or `stayawake status` | Shows the current setting |
 | `stayawake buddy` | Shows Whitney the Dogo Argentino, on watch or asleep |
+| `stayawake upgrade` | Installs the latest version via Homebrew |
 | `stayawake updates` | Checks GitHub for a newer release |
 | `stayawake updates --open` | Opens the release page |
 
 ## Install with Homebrew
 
 ```bash
-brew install Gabriellvl/tap/stayawake
-stayawake status
+brew tap gabe-maxxing/tap
+brew trust --formula gabe-maxxing/tap/stayawake
+brew install gabe-maxxing/tap/stayawake
 ```
 
-Use `brew upgrade Gabriellvl/tap/stayawake` to update. Use
-`brew uninstall Gabriellvl/tap/stayawake` to remove the command. Run
-`stayawake off` before uninstalling if you want to restore normal sleep.
+Run `stayawake status` to see Whitney and your current sleep setting.
 
-`stayawake --help` lists all commands and `stayawake --version` shows
-the installed version. If your installed release predates the terminal buddy,
-use [the Git checkout](#run-from-the-repo) to try the latest code.
+### Update with Homebrew
+
+```bash
+stayawake upgrade
+```
+
+If you still have version 1.1.0, run this once to get the command when it
+becomes available in the tap.
+
+```bash
+brew update
+brew trust --formula gabe-maxxing/tap/stayawake
+brew upgrade gabe-maxxing/tap/stayawake
+```
+
+Homebrew saves the trust setting for this formula. Older Homebrew versions
+without `brew trust` can skip that line. Run `stayawake --version` to confirm
+the installed version.
+
+Use `brew uninstall gabe-maxxing/tap/stayawake` to remove the command. Run
+`stayawake off` before uninstalling if you want to restore normal sleep.
 
 ## Whitney, your terminal watchdog
 
 <img src="docs/whitney-logo.png" width="52" align="right" alt="">
 
-The white Dogo Argentino who inspired stayawake now has three terminal poses.
-She stands watch when your Mac is set to stay awake, curls up when it can
-sleep, and perks up when there is a new release. Run `stayawake buddy` to see
-her and check your Mac's sleep setting.
+Whitney wags her tail and stands watch after `stayawake on`. When you run
+`stayawake off`, she curls up with drifting Zs. Run `stayawake` or
+`stayawake status` to see the animation for your Mac’s current setting.
+`stayawake buddy` also shows her pose when you pipe the output.
 
 During normal interactive use, stayawake checks the public GitHub release
 page at most once a day after a successful check. A network failure is
