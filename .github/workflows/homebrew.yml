@@ -1,0 +1,43 @@
+name: Update Homebrew tap
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: stayawake-homebrew-tap
+  cancel-in-progress: false
+
+jobs:
+  update-formula:
+    if: github.event_name == 'workflow_dispatch' || !github.event.release.prerelease
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          repository: gabe-maxxing/homebrew-tap
+          ref: main
+          path: tap
+          ssh-key: ${{ secrets.HOMEBREW_TAP_DEPLOY_KEY }}
+      - name: Verify the release asset and update the formula
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api repos/gabe-maxxing/stayawake/releases/latest > "$RUNNER_TEMP/stayawake-release.json"
+          python3 .github/scripts/update-homebrew.py "$RUNNER_TEMP/stayawake-release.json" tap/Formula/stayawake.rb
+          git -C tap diff --check
+          if git -C tap diff --quiet -- Formula/stayawake.rb; then
+            exit 0
+          fi
+          tag=$(jq -r .tag_name "$RUNNER_TEMP/stayawake-release.json")
+          git -C tap -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' \
+            commit -m "Update stayawake to $tag" -- Formula/stayawake.rb
+          git -C tap push origin HEAD:main
